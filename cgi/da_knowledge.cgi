@@ -9,6 +9,8 @@ BEGIN {
 }
 
 use strict;
+use warnings;
+
 my $r = shift;
 &main($r);
 Apache::exit();
@@ -20,12 +22,12 @@ sub main {
 	DA::Session::get_dir($session,$r);
 	my $query=Apache::Request->new($r,TEMP_DIR=>"$session->{temp_dir}");
 
-
 	#Ajax request
 	if ($query->param('mode') eq 'get_user_info') {
 		DA::Addon::DaKnowledge::Api::get_user_info($session,$query);
 	} elsif ($query->param('mode') eq 'get_book_info') {
-		DA::Addon::DaKnowledge::Api::get_book_info($session,$query);
+#		DA::Addon::DaKnowledge::Api::get_book_info($session,$query);
+		DA::Custom::get_book_info($session,$query);
 	} elsif ($query->param('mode') eq 'get_books_info') {
 		DA::Addon::DaKnowledge::Api::get_books_info($session,$query);
 	} elsif ($query->param('mode') eq 'get_recently_borrow_list') {
