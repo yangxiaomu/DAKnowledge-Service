@@ -1,0 +1,63 @@
+<html>
+<head>
+<script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery
+/jquery-1.4.min.js"></script>
+
+<script type="text/javascript">
+
+function test(){
+	$.ajax({
+		url: 'http://10.2.8.201/cgi-bin/custom/DAKnowledge/da_knowledge.cgi',
+		type:'post',
+		data:{
+			mode: 'get_book_info',
+			bar_code: '1'
+		},
+		success:function(result){
+			$("#loginId").html(result.name);
+		}
+	})
+	// $.ajax({
+	//     url:'http://10.2.8.201/hibiki/rest/1/session/',
+	//     type:'post',
+	//     dataType:'json',
+	//     data:{
+	//          loginid: '1',
+	//          password: '1'
+	//     },
+	//     success:function(result){
+	//   	  $("#loginId").html(result.account.name);
+	// 	}
+	// })	
+};
+//binders
+function binders(){
+	$.ajax({
+	    url: 'http://10.2.8.201/hibiki/rest/1/binders/',
+	    type: 'get',
+	    dataType: 'json',
+	    success:function(result){
+	    	if (!result) return;
+		    var binderIds = new Array();
+		    var binderList = result.binder instanceof Array ? result.binder : [result.binder];
+		    $.each(binderList,function(index,binder){
+		         binderIds.push(binder.id);
+		    });
+	    }
+	})
+};
+
+
+</script>
+</head>
+
+<body>
+<h2>api test</h2>
+<p>=================</p>
+<p>Login user name:</p>
+<p id="loginId"></p>
+<button type="button" id="login" onclick=test();>Click me</button>
+
+</body>
+</html>
+
