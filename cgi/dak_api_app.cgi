@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl
 ##########################################
-#        API FOR DA_KNOWLEDGE            #
+#        API FOR DA_KNOWLEDGE'S APP      #
 ##########################################
 
 BEGIN {
