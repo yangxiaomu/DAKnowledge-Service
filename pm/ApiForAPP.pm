@@ -29,7 +29,13 @@ sub get_book_info {
 	my $book_info = $sth->fetchrow_hashref('NAME_lc');
 	$sth->finish();
 
-	&return_json($session,JSON::objToJson($book_info));
+	&return_json($session,$book_info);
+}
+
+sub borrow_a_book {
+	my ($session,$query) = @_;
+
+	my $num = $query->param('num');
 }
 
 #新增一本书 献书
@@ -54,13 +60,13 @@ sub app_rate_book {
 		my $sql = "UPDATE $TABLE_BORROW SET comment=?,category=?,rate=?,borrow_times=?"
 				." WHERE bar_code=?";
 		my $sth = $session->{dbh}->prepare($sql);
-		$sth->bind_param(1,int($query->{'bar_code'}),3);
-		$sth->bind_param(2,$query->{'name'},1);
-		$sth->bind_param(3,$query->{'abstract'},1);
-		$sth->bind_param(4,$query->{'owner'},3);
-		$sth->bind_param(5,$query->{'get_date'},1);
-		$sth->bind_param(6,$query->{'comment'},1);
-		$sth->bind_param(7,$query->{'category'},1
+		$sth->bind_param(1,int($query->param('bar_code'),3);
+		$sth->bind_param(2,$query->param('name'),1);
+		$sth->bind_param(3,$query->param('abstract'),1);
+		$sth->bind_param(4,$query->param('owner'),3);
+		$sth->bind_param(5,$query->param('get_date'),1);
+		$sth->bind_param(6,$query->param('comment'),1);
+		$sth->bind_param(7,$query->param('category'),1
 		$sth->execute();	
 	};
 	if (!DA::Session::exception($session)) {
@@ -68,25 +74,93 @@ sub app_rate_book {
 	}
 }
 
+#获取我的借阅一览
+#入参：mode      get_my_borrow_books
+#     mid       用户id  
+#
 sub get_my_borrow_books {
 	my ($session,$query) = @_;
 
 	my $sql = "SELECT A.name,A.rate,A.category,B.* FROM $TABLE_BOOK A,$TABLE_BORROW B WHERE A.bar_code=B.bar_code"
-			 ." AND mid = ?";
+			 ." AND mid = ? ORDER BY B.status";
 	my $sth = $session->{dbh}->prepare($sql);
-	$sth->bind_param(1,int($query->{'mid'}),3);
+	$sth->bind_param(1,int($query->param('mid'),3);
 	$sth->execute();
 	my $data;
 	while (my $book_data = $sth->fetchrow_hashref('NAME_lc')) {
 		$data->{$book_data->{num}} = $book_data;
 	}
-	&return_json($session,JSON::objToJson($data));
+	&return_json($session,$data);
 }
 
 
-sub return_json{
-	my ($session,$json)=@_;
+#获取新上架的书籍一览
+#入参：mode       get_recent_new_books
+#     start_date YYYY/MM/DD
+#	  limit		 获取几本
+sub get_recent_new_books {
+	my ($session,$query) = @_;
 
+	my ($condition,$limt);
+	# 如果有开始时间的话，获取开始时间到当前时间的数据
+	if ($query->param('start_date')) {
+		$condition = "WHERE get_date > ?";
+	}
+	if ($query->param('limit')) {
+		$limit = "limit $query->param(limit)";
+	}
+	my $sql = "SELECT * FROM $TABLE_BOOK $condition ORDER BY get_date desc $limit";
+	my $sth = $session->{dbh}->prepare($sql);
+	if ($query->param('start_date')) {
+		$sth->bind_param(1,$query->param('start_date'),1);
+	}
+	$sth->execute();
+	my $data;
+	while (my $book_data = $sth->fetchrow_hashref('NAME_lc')) {
+		$data->{$book_data->{bar_code}} = $book_data;
+	}
+	&return_json($session,$data);	
+}
+
+#获取借阅次数最多的书籍一览
+#入参：mode       get_popular_books
+#     start_date YYYY/MM/DD	
+#     limit      请求数据条数
+sub get_popular_books {
+	my ($session,$query) = @_;
+
+	my ($condition,$limit);
+	# 如果有开始时间的话，获取开始时间到当前时点的数据
+	if ($query->param('start_date')) {
+		$condition = "AND start_date > ?";
+	}
+	if ($query->param('limit')) {
+		$limit = "limit $query->{limit}";
+	}
+	my $sql = "SELECT * FROM $TABLE_BOOK A, $TABLE_BORROW B WHERE "
+			 ."A.bar_code = B.bar_code $condition ORDER BY A.borrow_times desc $limit";
+	my $sth = $session->{dbh}->prepare($sql);
+	if ($query->('start_date')) {
+		$sth->bind_param(1,$query->param('start_date'),1);
+	}
+	$sth->execute();
+	my $data;
+	while (my $book_data = $sth->fetchrow_hashref('NAME_lc')) {
+		$data->{$book_data->{bar_code}} = $book_data;
+	}
+	&return_json($session,$data);
+}
+
+sub get_user_info {
+	my ($session,$query) = @_;
+
+	
+}
+
+sub return_json{
+	my ($session,$data)=@_;
+
+	my $json = JSON::objToJson($data);
 warn Data::Dumper->Dump([$json]);
 	$json=DA::Charset::convert(\$json,DA::Unicode::internal_charset(),'UTF-8');
 	print "Content-length: " . length($json) . "\n";
