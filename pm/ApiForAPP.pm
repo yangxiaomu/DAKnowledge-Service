@@ -7,6 +7,15 @@ use warnings;
 
 use DA::Init();
 
+require Exporter;
+
+our @ISA = qw(Exporter);
+
+our %EXPORT_TAGS = ( 'all' => [ qw(get_book_info) ]);
+our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
+our @EXPORT = (@{ $EXPORT_TAGS{'all'} } );
+our $VERSION = '0.01';
+
 our $TABLE_BOOK = "ADDON_DAK_BOOK";
 our $TABLE_USER = "ADDON_DAK_USER";
 our $TABLE_CATEGORY = "ADDON_BOOK_CATEGORY";

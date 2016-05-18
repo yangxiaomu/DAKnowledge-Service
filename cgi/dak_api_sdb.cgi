@@ -24,11 +24,11 @@ sub main {
 
 	#Ajax request
 	if ($query->param('mode') eq 'sdb_insert_book') {
-		DA::Addon::DaKnowledge::ApiForSDB::sdb_insert_book($session,$query);
+		DA::Addon::DAKnowledge::ApiForSDB::sdb_insert_book($session,$query);
 	} elsif ($query->param('mode') eq 'sdb_delete_book') {
-		DA::Addon::DaKnowledge::ApiForSDB::sdb_delete_book($session,$query);		DA::Custom::get_book_info($session,$query);
+		DA::Addon::DAKnowledge::ApiForSDB::sdb_delete_book($session,$query);		DA::Custom::get_book_info($session,$query);
 	} elsif ($query->param('mode') eq 'sdb_update_book') {
-		DA::Addon::DaKnowledge::ApiForSDB::sdb_update_book($session,$query);
+		DA::Addon::DAKnowledge::ApiForSDB::sdb_update_book($session,$query);
 	}
 
 	$session->{dbh}->disconnect;
