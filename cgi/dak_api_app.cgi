@@ -34,8 +34,8 @@ warn "1";
 		DA::Addon::DAKnowledge::ApiForAPP::get_user_info($session,$query);
 	} elsif ($query->param('mode') eq 'get_book_info') {
 warn "2";
-		DA::Addon::DAKnowledge::ApiForAPP::get_book_info($session,$query);
-		#DA::Custom::get_book_info($session,$query);
+		#DA::Addon::DAKnowledge::ApiForAPP::get_book_info($session,$query);
+		DA::Custom::get_book_info($session,$query);
 	} elsif ($query->param('mode') eq 'get_books_info') {
 		DA::Addon::DAKnowledge::ApiForAPP::get_books_info($session,$query);
 	} elsif ($query->param('mode') eq 'get_recently_borrow_list') {

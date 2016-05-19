@@ -4,7 +4,7 @@ package DA::Addon::DAKnowledge::ApiForSDB;
 ##########################################
 
 use strict;
-use DA::Init();
+#use DA::Init();
 
 our $TABLE_BOOK = "ADDON_DAK_BOOK";
 our $TABLE_USER = "ADDON_DAK_USER";

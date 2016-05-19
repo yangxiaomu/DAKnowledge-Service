@@ -5,16 +5,16 @@ package DA::Addon::DAKnowledge::ApiForAPP;
 use strict;
 use warnings;
 
-use DA::Init();
+#use DA::Init();
 
-require Exporter;
+# require Exporter;
 
-our @ISA = qw(Exporter);
+# our @ISA = qw(Exporter);
 
-our %EXPORT_TAGS = ( 'all' => [ qw(get_book_info) ]);
-our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
-our @EXPORT = (@{ $EXPORT_TAGS{'all'} } );
-our $VERSION = '0.01';
+# our %EXPORT_TAGS = ( 'all' => [ qw(get_book_info) ]);
+# our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
+# our @EXPORT = (@{ $EXPORT_TAGS{'all'} } );
+# our $VERSION = '0.01';
 
 our $TABLE_BOOK = "ADDON_DAK_BOOK";
 our $TABLE_USER = "ADDON_DAK_USER";
@@ -66,17 +66,13 @@ sub app_rate_book {
 
 	DA::Session::trans_int($session);
 	eval {
-		my $sql = "UPDATE $TABLE_BORROW SET comment=?,category=?,rate=?,borrow_times=?"
+		my $sql = "UPDATE $TABLE_BORROW SET rate=?,comment=?"
 				." WHERE bar_code=?";
 		my $sth = $session->{dbh}->prepare($sql);
-		$sth->bind_param(1,int($query->param('bar_code'),3);
-		$sth->bind_param(2,$query->param('name'),1);
-		$sth->bind_param(3,$query->param('abstract'),1);
-		$sth->bind_param(4,$query->param('owner'),3);
-		$sth->bind_param(5,$query->param('get_date'),1);
-		$sth->bind_param(6,$query->param('comment'),1);
-		$sth->bind_param(7,$query->param('category'),1
-		$sth->execute();	
+		$sth->bind_param(1,int($query->param('rate')),1);
+		$sth->bind_param(2,$query->param('comment'),3);
+		$sth->bind_param(3,$query->param('bar_code'),1);
+		$sth->execute();
 	};
 	if (!DA::Session::exception($session)) {
 		warn "insert book $query->{'bar_code'} failed";
@@ -93,7 +89,7 @@ sub get_my_borrow_books {
 	my $sql = "SELECT A.name,A.rate,A.category,B.* FROM $TABLE_BOOK A,$TABLE_BORROW B WHERE A.bar_code=B.bar_code"
 			 ." AND mid = ? ORDER BY B.status";
 	my $sth = $session->{dbh}->prepare($sql);
-	$sth->bind_param(1,int($query->param('mid'),3);
+	$sth->bind_param(1,int($query->param('mid')),3);
 	$sth->execute();
 	my $data;
 	while (my $book_data = $sth->fetchrow_hashref('NAME_lc')) {
@@ -110,7 +106,7 @@ sub get_my_borrow_books {
 sub get_recent_new_books {
 	my ($session,$query) = @_;
 
-	my ($condition,$limt);
+	my ($condition,$limit);
 	# 如果有开始时间的话，获取开始时间到当前时间的数据
 	if ($query->param('start_date')) {
 		$condition = "WHERE get_date > ?";
