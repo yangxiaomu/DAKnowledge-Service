@@ -156,10 +156,24 @@ sub get_popular_books {
 	&return_json($session,$data);
 }
 
+#
+# 图片位置 /home/Dreamarts/data/master/MID/DAK/avater.jpg
+#                                            background.jpg
+# 书籍图片保存路径 /home/Dreamarts/data/DAK/BOOK_NUM/thumb.jpg 
+# 												  original.jpg
+#
+
 sub get_user_info {
 	my ($session,$query) = @_;
 
-	
+	my $sql = "SELECT * FROM $TABLE_USER WHERE mid = ?";
+	my $sth = $session->{dbh}->prepare($sql);
+	$sth->bind_param(1,int($query->param('mid')),3);
+	$sth->execute();
+	my $user_data = $sth->fetchrow_hashref('NAME_lc');
+	$sth->finish;
+
+	&return_json($user_data);
 }
 
 sub return_json{
